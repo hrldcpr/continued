@@ -122,3 +122,24 @@ for coefficients in ((123,2,5,5,2), (3,3), (19,5,4,1,3), it.cycle((1,))):
     print('digits:', ' '.join(map(str, it.islice(as_digits(coefficients), 20))))
     print('digit coefficients:', ' '.join(map(str, continued_digits(it.islice(as_digits(coefficients), 20)))))
     print()
+
+
+def readints():
+    import sys
+    while True:
+        line = sys.stdin.readline().strip()
+        if line == '.': yield line
+        elif line: yield int(line)
+        else: break
+
+print('enter digit or . per line, finish with empty line:')
+coefficients = []
+for a in continued_digits(readints()):
+    coefficients.append(a)
+    print(coefficients)
+
+print('enter coefficient per line, finish with empty line:')
+digits = []
+for d in as_digits(readints()):
+    digits.append(d)
+    print(' '.join(map(str, digits)))
