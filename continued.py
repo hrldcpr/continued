@@ -90,16 +90,14 @@ def as_digits(coefficients, base=10):
     yield '.'
 
     # continued part
-    all_coefficients = [x_digits]
     k = base
+    x_coefficients = [x_digits]
     for a in coefficients:
-        boundary_coefficients = all_coefficients + [a + 1]  # upper/lower bound
-        all_coefficients      = all_coefficients + [a]  # lower/upper bound
-        y = as_rational(boundary_coefficients)
-        x = as_rational(all_coefficients)
+        y_coefficients = x_coefficients + [a + 1]  # upper/lower bound
+        x_coefficients = x_coefficients + [a + 0]  # lower/upper bound
+        y = as_rational(y_coefficients)
+        x = as_rational(x_coefficients)
         if math.floor(k * x) == math.floor(k * y):
-            # even if next step is as large as this one (it can't be larger)
-            # then digit still won't change, so it's
             yield math.floor(k * (x - x_digits))
             x_digits = fractions.Fraction(math.floor(k * x), k)
             k *= base
