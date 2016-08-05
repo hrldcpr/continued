@@ -1,5 +1,5 @@
 import fractions
-import itertools
+import itertools as it
 import math
 
 
@@ -63,14 +63,14 @@ def continued_digits(digits, base=10):
         x = x + fractions.Fraction(d + 0, k)  # lower bound
         y_coefficients = continued_rational(y)
         x_coefficients = continued_rational(x)
-        for a_x, a_y in itertools.islice(zip(x_coefficients, y_coefficients), n, None):
+        for a_x, a_y in it.islice(zip(x_coefficients, y_coefficients), n, None):
             if a_x == a_y:
                 yield a_x
                 n += 1
             else: break
 
     # leftovers
-    yield from itertools.islice(continued_rational(x), n, None)
+    yield from it.islice(continued_rational(x), n, None)
 
 @iterize
 def as_rational(coefficients):
@@ -106,12 +106,19 @@ def as_digits(coefficients, base=10):
     if x_digits != x:
         y = k * (x - x_digits) / base
         # slice off initial 0 and '.':
-        yield from itertools.islice(rational_as_digits(y, base=base), 2, None)
+        yield from it.islice(rational_as_digits(y, base=base), 2, None)
 
 
+# 123456/1000 = 123.456 = [123;2,5,5,2]
+# 100/3 = 3.333… = [3;3]
 # 1900/99 = 19.191919… = [19;5,4,1,3]
-print(''.join(str(d) for d in itertools.islice(rational_as_digits(1900, 99), 20)))
-for a in continued_rational(1900, 99): print(a)
-print(as_rational(continued_rational(1900, 99)))
-print(''.join(str(d) for d in itertools.islice(as_digits(continued_rational(1900, 99)), 20)))
-print(''.join(str(d) for d in itertools.islice(as_digits(continued_rational(100, 3)), 20)))
+# ϕ = [1;1,1,1,…]
+for coefficients in ((123,2,5,5,2), (3,3), (19,5,4,1,3), it.cycle((1,))):
+    print('coefficients:', ' '.join(map(str, it.islice(coefficients, 10))))
+    rational = as_rational(it.islice(coefficients, 10))
+    print('rational:', rational)
+    print('rational digits:', ' '.join(map(str, it.islice(rational_as_digits(rational), 20))))
+    print('rational coefficients:', ' '.join(map(str, continued_rational(rational))))
+    print('digits:', ' '.join(map(str, it.islice(as_digits(coefficients), 20))))
+    print('digit coefficients:', ' '.join(map(str, continued_digits(it.islice(as_digits(coefficients), 20)))))
+    print()
