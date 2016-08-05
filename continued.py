@@ -53,16 +53,24 @@ def continued_digits(digits, base=10):
         x *= base
         x += d
     yield x
+    n = 1
 
     # fractional part
-    coefficients = [x]
-    k = base
+    k = 1
     for d in digits:
+        k *= base
         y = x + fractions.Fraction(d + 1, k)  # upper bound
-        x = x + fractions.Fraction(d,     k)  # lower bound
+        x = x + fractions.Fraction(d + 0, k)  # lower bound
+        y_coefficients = continued_rational(y)
+        x_coefficients = continued_rational(x)
+        for a_x, a_y in itertools.islice(zip(x_coefficients, y_coefficients), n, None):
+            if a_x == a_y:
+                yield a_x
+                n += 1
+            else: break
 
-
-
+    # leftovers
+    yield from itertools.islice(continued_rational(x), n, None)
 
 @iterize
 def as_rational(coefficients):
