@@ -36,9 +36,7 @@ def rational_as_digits(x, base=10):
 
 
 @rationalize
-def continued_rational(x, denominator=None):
-    if denominator: x = fractions.Fraction(x, denominator)
-
+def continued_rational(x):
     a = math.floor(x)
     yield a
     x -= a
