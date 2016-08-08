@@ -1,6 +1,8 @@
 import fractions
+import functools
 import itertools as it
 import math
+import operator
 
 
 def rationalize(f):
@@ -113,21 +115,6 @@ def as_digits(coefficients, base=10):
         yield from it.islice(rational_as_digits(y, base=base), 2, None)
 
 
-# 123456/1000 = 123.456 = [123;2,5,5,2]
-# 100/3 = 3.333… = [3;3]
-# 1900/99 = 19.191919… = [19;5,4,1,3]
-# ϕ = [1;1,1,1,…]
-for coefficients in ((123,2,5,5,2), (3,3), (19,5,4,1,3), it.cycle((1,))):
-    print('coefficients:', ' '.join(map(str, it.islice(coefficients, 10))))
-    rational = as_rational(it.islice(coefficients, 10))
-    print('rational:', rational)
-    print('rational digits:', ' '.join(map(str, it.islice(rational_as_digits(rational), 20))))
-    print('rational coefficients:', ' '.join(map(str, continued_rational(rational))))
-    print('digits:', ' '.join(map(str, it.islice(as_digits(coefficients), 20))))
-    print('digit coefficients:', ' '.join(map(str, continued_digits(it.islice(as_digits(coefficients), 20)))))
-    print()
-
-
 def readints():
     import sys
     while True:
@@ -136,14 +123,39 @@ def readints():
         elif line: yield int(line)
         else: break
 
-print('enter digit or . per line, finish with empty line:')
-coefficients = []
-for a in continued_digits(readints()):
-    coefficients.append(a)
-    print(coefficients)
+def main():
+    # 123456/1000 = 123.456 = [123;2,5,5,2]
+    # 100/3 = 3.333… = [3;3]
+    # 1900/99 = 19.191919… = [19;5,4,1,3]
+    # ϕ = [1;1,1,1,…]
+    for coefficients in ((123,2,5,5,2), (3,3), (19,5,4,1,3), it.cycle((1,))):
+        print('coefficients:', ' '.join(map(str, it.islice(coefficients, 10))))
+        rational = as_rational(it.islice(coefficients, 10))
+        print('rational:', rational)
+        print('rational digits:', ' '.join(map(str, it.islice(rational_as_digits(rational), 20))))
+        print('rational coefficients:', ' '.join(map(str, continued_rational(rational))))
+        print('digits:', ' '.join(map(str, it.islice(as_digits(coefficients), 20))))
+        print('digit coefficients:', ' '.join(map(str, continued_digits(it.islice(as_digits(coefficients), 20)))))
+        print()
 
-print('enter coefficient per line, finish with empty line:')
-digits = []
-for d in as_digits(readints()):
-    digits.append(d)
-    print(' '.join(map(str, digits)))
+    import random
+    n = 1000
+    x = fractions.Fraction(sum(random.randrange(10) * 10**i for i in range(n)), 10**n)
+    coefficients = list(it.islice(continued_rational(x), 1, None))
+    print('geometric mean of coefficients of {} random digits:'.format(n),
+          math.exp(sum(map(math.log, coefficients)) / len(coefficients)))
+
+    print('enter digit or . per line, finish with empty line:')
+    coefficients = []
+    for a in continued_digits(readints()):
+        coefficients.append(a)
+        print(coefficients)
+
+    print('enter coefficient per line, finish with empty line:')
+    digits = []
+    for d in as_digits(readints()):
+        digits.append(d)
+        print(' '.join(map(str, digits)))
+
+if __name__ == '__main__':
+    main()
