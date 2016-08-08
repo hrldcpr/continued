@@ -139,11 +139,20 @@ def main():
         print()
 
     import random
-    n = 1000
-    x = fractions.Fraction(sum(random.randrange(10) * 10**i for i in range(n)), 10**n)
-    coefficients = list(it.islice(continued_rational(x), 1, None))
-    print('geometric mean of coefficients of {} random digits:'.format(n),
-          math.exp(sum(map(math.log, coefficients)) / len(coefficients)))
+    import statistics
+    import matplotlib.pyplot as plt
+    from tqdm import tqdm
+    for n in (10, 100, 1000):
+        means = []
+        for _ in tqdm(range(100)):
+            x = fractions.Fraction(sum(random.randrange(10) * 10**i for i in range(n)), 10**n)
+            coefficients = list(it.islice(continued_rational(x), 1, None))
+            means.append(math.exp(sum(map(math.log, coefficients)) / len(coefficients)))
+        print('average geometric mean of coefficients of {} random digits:'.format(n),
+              statistics.mean(means))
+        plt.hist(means, label=str(n))
+    plt.legend()
+    plt.show()
 
     print('enter digit or . per line, finish with empty line:')
     coefficients = []
