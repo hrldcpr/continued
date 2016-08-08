@@ -18,9 +18,13 @@ def iterize(f):
 
 
 def integer_as_digits(n, base=10):
-    if n >= base:
-        yield from integer_as_digits(n // base, base=base)
-    yield n % base
+    k = 1
+    while k * base < n:
+        k *= base
+    while k:
+        yield n // k
+        n = n % k
+        k //= base
 
 @rationalize
 def rational_as_digits(x, base=10):
@@ -37,10 +41,12 @@ def rational_as_digits(x, base=10):
 
 @rationalize
 def continued_rational(x):
-    a = math.floor(x)
-    yield a
-    x -= a
-    if x: yield from continued_rational(1 / x)
+    while True:
+        a = math.floor(x)
+        yield a
+        x -= a
+        if not x: break
+        x = 1 / x
 
 @iterize
 def continued_digits(digits, base=10):
