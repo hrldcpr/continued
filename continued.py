@@ -142,7 +142,7 @@ def main():
     import statistics
     import matplotlib.pyplot as plt
     from tqdm import tqdm
-    for n in (10, 100, 1000):
+    for n in (10, 100):
         means = []
         for _ in tqdm(range(100)):
             x = fractions.Fraction(sum(random.randrange(10) * 10**i for i in range(n)), 10**n)
@@ -153,6 +153,49 @@ def main():
         plt.hist(means, label=str(n))
     plt.legend()
     plt.show()
+
+    n = 100
+    for base in (2, 10, 16):
+        print('base:', base)
+        n_digits = 0
+        n_coefficients = -1
+        xs = []
+        ys = []
+        def coefficients():
+            nonlocal n_coefficients
+            while True:
+                n_coefficients += 1
+                yield 1
+        for _ in it.islice(tqdm(as_digits(coefficients(), base=base), total=n), 2, n):
+            n_digits += 1
+            xs.append(n_coefficients)
+            ys.append(n_digits)
+        print('ϕ digits per coefficient:', n_digits / n_coefficients)
+        plt.plot(xs, ys, label='ϕ')
+
+        for _ in range(3):
+            n_digits = 0
+            n_coefficients = -1
+            xs = []
+            ys = []
+            def digits():
+                nonlocal n_digits
+                yield 0
+                yield '.'
+                while True:
+                    n_digits += 1
+                    yield random.randrange(base)
+            for _ in continued_digits(tqdm(it.islice(digits(), n+2), total=n+2), base=base):
+                n_coefficients += 1
+                xs.append(n_coefficients)
+                ys.append(n_digits)
+                if n_digits == n: break
+            print('random digits per coefficient:', n_digits / n_coefficients)
+            plt.plot(xs, ys, label='random')
+
+        plt.axes().set_aspect('equal')
+        plt.legend()
+        plt.show()
 
     print('enter digit or . per line, finish with empty line:')
     coefficients = []
