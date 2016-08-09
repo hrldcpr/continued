@@ -97,6 +97,7 @@ def as_digits(coefficients, base=10):
     # continued part
     k = base
     x_coefficients = [x_digits]
+    x = x_digits
     for a in coefficients:
         y_coefficients = x_coefficients + [a + 1]  # upper/lower bound
         x_coefficients = x_coefficients + [a + 0]  # lower/upper bound
