@@ -80,13 +80,12 @@ def continued_digits(digits, base=10):
 
 @iterize
 def as_rational(coefficients):
-    try:
-        a = fractions.Fraction(next(coefficients))
-        x = as_rational(coefficients)
-        if x: return a + 1/x
-        else: return a
-    except StopIteration:
-        return
+    h_prev, k_prev = 0, 1
+    h, k = 1, 0
+    for a in coefficients:
+        h, h_prev = a*h + h_prev, h
+        k, k_prev = a*k + k_prev, k
+    return fractions.Fraction(h, k)
 
 @iterize
 def as_digits(coefficients, base=10):
