@@ -60,6 +60,7 @@ def continued_digits(digits, base=10):
         x += d
     yield x
     n = 1
+    # TODO what if we have e.g. 0.99999999…
 
     # fractional part
     k = 1
@@ -93,6 +94,7 @@ def as_digits(coefficients, base=10):
     x_digits = next(coefficients)
     yield from integer_as_digits(x_digits, base=base)
     yield '.'
+    # TODO what if we have e.g. [0;1]
 
     # continued part
     k = base
