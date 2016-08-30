@@ -8,7 +8,7 @@ Read my [Continued Fraction Streams](https://x.st/continued-fraction-streams/) w
 
 Next time you forget the digits of the golden ratio, just remember that its continued fraction coefficients are all ones.
 
-…and grab an endless stream of ones from the unexpectedly useful `yes` command:
+…then grab an endless stream of ones from the unexpectedly useful `yes` command:
 
 ``` bash
 > yes 1
