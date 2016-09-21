@@ -67,7 +67,7 @@ def continued_digits(digits, base=10):
     for d in digits:
         k *= base
         y = x + fractions.Fraction(d + 1, k)  # upper bound
-        x = x + fractions.Fraction(d + 0, k)  # lower bound
+        x = x + fractions.Fraction(d,     k)  # lower bound
         y_coefficients = continued_rational(y)
         x_coefficients = continued_rational(x)
         for a_x, a_y in it.islice(zip(x_coefficients, y_coefficients), n, None):
@@ -79,17 +79,33 @@ def continued_digits(digits, base=10):
     # leftovers
     yield from it.islice(continued_rational(x), n, None)
 
+
+class Convergent:
+    def __init__(self, h=1, k=0, h_prev=0, k_prev=1):
+        self.h_prev = h_prev
+        self.k_prev = k_prev
+        self.h = h
+        self.k = k
+
+    def next(self, a):
+        return Convergent(h=a*self.h + self.h_prev, h_prev=self.h,
+                          k=a*self.k + self.k_prev, k_prev=self.k)
+
+    @property
+    def fraction(self):
+        return fractions.Fraction(self.h, self.k)
+
 @iterize
 def as_rational(coefficients):
-    h_prev, k_prev = 0, 1
-    h, k = 1, 0
+    c = Convergent()
     for a in coefficients:
-        h, h_prev = a*h + h_prev, h
-        k, k_prev = a*k + k_prev, k
-    return fractions.Fraction(h, k)
+        c = c.next(a)
+    return c.fraction
 
 @iterize
 def as_digits(coefficients, base=10):
+    x_convergent = Convergent()
+
     # integer part
     x_digits = next(coefficients)
     yield from integer_as_digits(x_digits, base=base)
@@ -98,13 +114,13 @@ def as_digits(coefficients, base=10):
 
     # continued part
     k = base
-    x_coefficients = [x_digits]
+    x_convergent = x_convergent.next(x_digits)
     x = x_digits
     for a in coefficients:
-        y_coefficients = x_coefficients + [a + 1]  # upper/lower bound
-        x_coefficients = x_coefficients + [a + 0]  # lower/upper bound
-        y = as_rational(y_coefficients)
-        x = as_rational(x_coefficients)
+        y_convergent = x_convergent.next(a + 1)  # upper/lower bound
+        x_convergent = x_convergent.next(a)      # lower/upper bound
+        y = y_convergent.fraction
+        x = x_convergent.fraction
         if math.floor(k * x) == math.floor(k * y):
             yield math.floor(k * (x - x_digits))
             x_digits = fractions.Fraction(math.floor(k * x), k)

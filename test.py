@@ -26,22 +26,41 @@ for coefficients in ((123,2,5,5,2), (3,3), (19,5,4,1,3), it.cycle((1,))):
 
 # Lochs' constant:
 base = 10
-n = 100
+n = 1000
+
 n_digits = 0
 n_coefficients = -1
 xs = []
 ys = []
-def coefficients():
+def phi_coefficients():
     global n_coefficients
     while True:
         n_coefficients += 1
         yield 1
-for _ in it.islice(tqdm(as_digits(coefficients(), base=base), total=n), 2, n):
+for _ in tqdm(it.islice(as_digits(phi_coefficients(), base=base), 2, n), total=n-2):
     n_digits += 1
     xs.append(n_coefficients)
     ys.append(n_digits)
 print('ϕ digits per coefficient:', n_digits / n_coefficients)
 plt.plot(xs, ys, label='ϕ')
+
+n_digits = 0
+n_coefficients = -1
+xs = []
+ys = []
+def sqrt2_coefficients():
+    global n_coefficients
+    n_coefficients += 1
+    yield 1
+    while True:
+        n_coefficients += 1
+        yield 2
+for _ in tqdm(it.islice(as_digits(sqrt2_coefficients(), base=base), 2, n), total=n-2):
+    n_digits += 1
+    xs.append(n_coefficients)
+    ys.append(n_digits)
+print('√2 digits per coefficient:', n_digits / n_coefficients)
+plt.plot(xs, ys, label='√2')
 
 for _ in range(3):
     n_digits = 0
@@ -64,8 +83,8 @@ for _ in range(3):
     plt.plot(xs, ys, label='random')
 
 plt.axes().set_aspect('equal')
-plt.xlabel('Coefficients')
-plt.ylabel('Digits')
+plt.xlabel('Continued Fraction Terms')
+plt.ylabel('Decimal Digits')
 plt.legend(loc='lower right')
 plt.show()
 
