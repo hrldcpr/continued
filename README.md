@@ -2,7 +2,7 @@
 
 This software converts streams of digits to streams of continued fraction coefficients, and vice-versa.
 
-Read my [Continued Fraction Streams](https://x.st/continued-fraction-streams/) writeup to learn more.
+Read my [Continued Fraction Streams](https://polyhedron.party/continued-fraction-streams/) writeup to learn more.
 
 ## For Example
 
